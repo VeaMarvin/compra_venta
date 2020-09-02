@@ -112,7 +112,7 @@ class VentaController extends Controller {
 
         $cantidad = count($ventas);
         $total = DB::table('ventas')->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])->sum('ventas.total');
-        $pdf = \PDF::loadView( 'pdf.ventas_pdf', ['ventas'=>$ventas, 'cantidad'=>$cantidad, 'total'=>$total, 'descuento'=>$descuento] );
+        $pdf = \PDF::loadView( 'pdf.ventas_pdf', ['ventas'=>$ventas, 'cantidad'=>$cantidad, 'total'=>$total] );
         return $pdf->download( 'ventas.pdf' ); 
     }
 
