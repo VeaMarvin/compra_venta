@@ -136,6 +136,7 @@
                                                 <th>Opciones</th>
                                                 <th>Articulo</th>
                                                 <th>Precio</th>
+                                                <th>Descuento</th>
                                                 <th>Cantidad</th>
                                                 <th>Subtotal</th>
                                             </tr>
@@ -149,6 +150,7 @@
                                                 </td>
                                                 <td v-text="detalle.articulo"> </td>
                                                 <td align="right">  {{ detalle.precio }}  </td>
+                                                <td align="right">  - {{ detalle.descuento }}  </td>
                                                 <td align="center">
                                                     <span style="color:red;">Stock: {{detalle.stock-detalle.cantidad}} </span> 
                                                     <input type="number" v-model="detalle.cantidad" step="any" class="form-control" value="0"> 
@@ -219,6 +221,7 @@
                                             <tr>
                                                 <th>Articulo</th>
                                                 <th>Precio</th>
+                                                <th>Descuento</th>
                                                 <th>Cantidad</th>
                                                 <th>Subtotal</th>
                                             </tr>
@@ -227,15 +230,16 @@
                                             <tr v-for="detalle in lista_detalle">
                                                 <td v-text="detalle.nombre"> </td>
                                                 <td align="right" v-text="detalle.precio"> </td>
+                                                <td align="right"> - {{ detalle.descuento }} </td>
                                                 <td align="center" v-text="detalle.cantidad"> </td>
-                                                <td align="right"> {{ Number((detalle.precio * detalle.cantidad).toFixed(2)) }} </td>
+                                                <td align="right"> {{ Number(((detalle.precio - detalle.descuento) * detalle.cantidad).toFixed(2)) }} </td>
                                             </tr>
                                             <tr v-if="descuento > 0" style="background-color:#EEEEEE;">
                                                 <td colspan="3" align="right"> <strong>Descuento:</strong> </td>
                                                 <td align="right">- {{ descuento }} </td>
                                             </tr>
                                             <tr style="background-color:#EEEEEE;">
-                                                <td colspan="3" align="right"> <strong>Total neto:</strong> </td>
+                                                <td colspan="4" align="right"> <strong>Total neto:</strong> </td>
                                                 <td align="right">Q  {{ total }} </td>
                                             </tr>
                                         </tbody>
@@ -421,7 +425,7 @@
             calcularTotal: function(){
                 var resultado = 0.0;
                 for(var i=0; i<this.lista_detalle.length; i++)
-                    resultado += this.lista_detalle[i].cantidad * this.lista_detalle[i].precio;
+                    resultado += this.lista_detalle[i].cantidad * (this.lista_detalle[i].precio - this.lista_detalle[i].descuento);
                 return resultado;
             }
         },
@@ -492,7 +496,7 @@
                         articulo: data.nombre,
                         cantidad: 1,
                         precio: data.precio_venta,
-                        descuento: 0,
+                        descuento: data.descuento,
                         stock: data.stock,
                     });
 

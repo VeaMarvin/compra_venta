@@ -206,7 +206,7 @@
                             <td> {{ $item->nombre }} </td>
                             <td style="text-align:center;"> {{ $item->cantidad }} </td>
                             <td style="text-align:right;"> {{ $item->precio }} </td>
-                            <td style="text-align:right;"> {{ $item->cantidad * $item->precio }} </td>
+                            <td style="text-align:right;"> {{ sprintf('%0.2f',($item->cantidad * ($item->precio - $item->descuento))) }} </td>
                         </tr>
                     @endforeach
                     @foreach ($venta as $item)

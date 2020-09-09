@@ -103,6 +103,7 @@
                                                 <th>Opciones</th>
                                                 <th>Articulo</th>
                                                 <th>Precio</th>
+                                                <th>Descuento</th>
                                                 <th>Cantidad</th>
                                                 <th>Subtotal</th>
                                             </tr>
@@ -117,20 +118,26 @@
                                                 <td v-text="detalle.articulo"> </td>
                                                 <td>  {{ detalle.precio }}  </td>
                                                 <td>
-                                                    <span style="color:red;">
-                                                    <input type="number" v-model="detalle.cantidad" step="any" class="form-control"> 
-                                                    Stock: {{ detalle.stock-detalle.cantidad }} </span> 
+                                                    <span>
+                                                        <input type="number" v-model="detalle.descuento_articulo" step="any" class="form-control"> 
+                                                        <span v-if="detalle.subtotal<0" style="color:red;">Descuento es mayor que precio</span>
+                                                    </span> 
                                                 </td>
-                                                <td style="text-align: right;">  {{ (detalle.precio * detalle.cantidad).toFixed(2) }} </td>
+                                                <td>
+                                                    <span style="color:red;">
+                                                        <input type="number" v-model="detalle.cantidad" step="any" class="form-control"> 
+                                                        Stock: {{ detalle.stock-detalle.cantidad }} </span> 
+                                                </td>
+                                                <td style="text-align: right;"> {{ parseFloat(detalle.subtotal).toFixed(2) }} </td>
                                             </tr>
                                             <tr style="background-color:#EEEEEE;">
-                                                <td colspan="4" style="font-size: 22px;" align="right"> <strong>Total Q:</strong> </td>
+                                                <td colspan="5" style="font-size: 22px;" align="right"> <strong>Total Q:</strong> </td>
                                                 <td style="text-align: right;">{{ calcularTotal }} </td>
                                             </tr>
                                         </tbody>
                                         <tbody v-else>
                                             <tr>
-                                                <td colspan="5"> No hay articulos agregados </td>
+                                                <td colspan="6"> No hay articulos agregados </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -145,10 +152,16 @@
                                     </section>
                                 </div>
                                 <div class="col-md-5" style="text-align: right;">
-                                    <input type="button" @click="abrirModalArticulo()" class="btn btn-success" value="ARTICULO">
-                                    <input v-if="tipo_comprobante=='FACTURA'" type="button" @click="cobroFactura()" class="btn btn-success" value="FACTURAR">
+                                    <div class="input-group" v-if="tipo_comprobante=='FACTURA'">
+                                        <input type="number" v-model="descuento" class="form-control" placeholder="Descuento Adicional Q." aria-label="Descuento" aria-describedby="basic-addon2">
+                                        <div class="input-group-append">
+                                            <input type="button" @click="cobroFactura()" class="btn btn-success" value="FACTURA">
+                                        </div>
+                                    </div>
+
+                                    
                                     <div class="input-group" v-if="tipo_comprobante=='RECIBO'">
-                                        <input type="number" v-model="descuento" class="form-control" placeholder="Descuento Q." aria-label="Descuento" aria-describedby="basic-addon2">
+                                        <input type="number" v-model="descuento" class="form-control" placeholder="Descuento Adicional Q." aria-label="Descuento" aria-describedby="basic-addon2">
                                         <div class="input-group-append">
                                             <input type="button" @click="cobroRecibo()" class="btn btn-primary" value="RECIBO">
                                         </div>
@@ -214,7 +227,7 @@ import vSelect from "vue-select";
                     'por_pagina': 0,
                     'ultima_pagina': 0,
                     'desde': 0,
-                    'hasta': 0
+                    'hasta': 0  
                 },
                 offset: 3,
                 criterio: 'numero_comprobante',
@@ -239,12 +252,17 @@ import vSelect from "vue-select";
         computed: {
             calcularTotal: function(){
                 var resultado = 0.0;
-                for(var i=0; i<this.lista_detalle.length; i++)
-                    resultado += this.lista_detalle[i].cantidad * this.lista_detalle[i].precio;
-                    
-                this.total = resultado
+                var descuento = 0.0;
+                for(var i=0; i<this.lista_detalle.length; i++){
+                    if(this.lista_detalle[i].descuento_articulo!=null){
+                        descuento = this.lista_detalle[i].descuento_articulo;
+                    }
+                    this.lista_detalle[i].subtotal = this.lista_detalle[i].cantidad * (this.lista_detalle[i].precio - descuento);
+                    resultado += this.lista_detalle[i].subtotal;
+                }
+                this.total = resultado;
                 return this.total.toFixed(2);
-            }
+            },
         },        
         methods: {
             abrirModalArticulo(){
@@ -348,8 +366,8 @@ import vSelect from "vue-select";
                         articulo: item.nombre,
                         cantidad: me.cantidad,
                         precio: item.precio_venta,
-                        subtotal: item.precio_venta*me.cantidad,
-                        descuento: 0,
+                        subtotal: item.subtotal,
+                        descuento: item.descuento_articulo,
                         stock: item.stock
                     });
                 }
@@ -400,6 +418,9 @@ import vSelect from "vue-select";
                 let me = this;
                 me.errores = [];
                 me.error_venta = 0;
+                console.log("d1("+me.descuento+")");
+                if(me.descuento==null) me.descuento=0;
+                console.log("d2("+me.descuento+")");
                 if(me.nit == '') {
                     me.error_venta = 1;
                     me.errores.push('(*) Ingrese el NIT del cliente'); 

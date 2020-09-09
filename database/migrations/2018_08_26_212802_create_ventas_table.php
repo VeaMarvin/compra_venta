@@ -19,6 +19,7 @@ class CreateVentasTable extends Migration {
             $table->decimal('total', 11, 2);
             $table->decimal('descuento',11,2);
             $table->string('estado', 20);
+            $table->boolean('credito')->default(0);
             $table->timestamps();
             $table->foreign('id_cliente')->references('id')->on('personas')->onUpdate('cascade');
             $table->foreign('id_usuario')->references('id_persona')->on('users')->onUpdate('cascade');

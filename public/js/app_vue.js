@@ -94075,6 +94075,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -94160,7 +94164,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         calcularTotal: function calcularTotal() {
             var resultado = 0.0;
             for (var i = 0; i < this.lista_detalle.length; i++) {
-                resultado += this.lista_detalle[i].cantidad * this.lista_detalle[i].precio;
+                resultado += this.lista_detalle[i].cantidad * (this.lista_detalle[i].precio - this.lista_detalle[i].descuento);
             }return resultado;
         }
     },
@@ -94225,7 +94229,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     articulo: data.nombre,
                     cantidad: 1,
                     precio: data.precio_venta,
-                    descuento: 0,
+                    descuento: data.descuento,
                     stock: data.stock
                 });
 
@@ -95084,6 +95088,18 @@ var render = function() {
                                         _vm._v(" "),
                                         _c(
                                           "td",
+                                          { attrs: { align: "right" } },
+                                          [
+                                            _vm._v(
+                                              "  - " +
+                                                _vm._s(detalle.descuento) +
+                                                "  "
+                                            )
+                                          ]
+                                        ),
+                                        _vm._v(" "),
+                                        _c(
+                                          "td",
                                           { attrs: { align: "center" } },
                                           [
                                             _c(
@@ -95337,6 +95353,18 @@ var render = function() {
                                           }
                                         }),
                                         _vm._v(" "),
+                                        _c(
+                                          "td",
+                                          { attrs: { align: "right" } },
+                                          [
+                                            _vm._v(
+                                              " - " +
+                                                _vm._s(detalle.descuento) +
+                                                " "
+                                            )
+                                          ]
+                                        ),
+                                        _vm._v(" "),
                                         _c("td", {
                                           attrs: { align: "center" },
                                           domProps: {
@@ -95355,7 +95383,8 @@ var render = function() {
                                                 _vm._s(
                                                   Number(
                                                     (
-                                                      detalle.precio *
+                                                      (detalle.precio -
+                                                        detalle.descuento) *
                                                       detalle.cantidad
                                                     ).toFixed(2)
                                                   )
@@ -95773,6 +95802,8 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Precio")]),
         _vm._v(" "),
+        _c("th", [_vm._v("Descuento")]),
+        _vm._v(" "),
         _c("th", [_vm._v("Cantidad")]),
         _vm._v(" "),
         _c("th", [_vm._v("Subtotal")])
@@ -95839,6 +95870,8 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Precio")]),
         _vm._v(" "),
+        _c("th", [_vm._v("Descuento")]),
+        _vm._v(" "),
         _c("th", [_vm._v("Cantidad")]),
         _vm._v(" "),
         _c("th", [_vm._v("Subtotal")])
@@ -95857,7 +95890,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { attrs: { colspan: "3", align: "right" } }, [
+    return _c("td", { attrs: { colspan: "4", align: "right" } }, [
       _c("strong", [_vm._v("Total neto:")])
     ])
   },
@@ -96176,6 +96209,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -96240,9 +96286,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     computed: {
         calcularTotal: function calcularTotal() {
             var resultado = 0.0;
+            var descuento = 0.0;
             for (var i = 0; i < this.lista_detalle.length; i++) {
-                resultado += this.lista_detalle[i].cantidad * this.lista_detalle[i].precio;
-            }this.total = resultado;
+                if (this.lista_detalle[i].descuento_articulo != null) {
+                    descuento = this.lista_detalle[i].descuento_articulo;
+                }
+                this.lista_detalle[i].subtotal = this.lista_detalle[i].cantidad * (this.lista_detalle[i].precio - descuento);
+                resultado += this.lista_detalle[i].subtotal;
+            }
+            this.total = resultado;
             return this.total.toFixed(2);
         }
     },
@@ -96339,8 +96391,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     articulo: item.nombre,
                     cantidad: me.cantidad,
                     precio: item.precio_venta,
-                    subtotal: item.precio_venta * me.cantidad,
-                    descuento: 0,
+                    subtotal: item.subtotal,
+                    descuento: item.descuento_articulo,
                     stock: item.stock
                 });
             }
@@ -96387,6 +96439,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var me = this;
             me.errores = [];
             me.error_venta = 0;
+            console.log("d1(" + me.descuento + ")");
+            if (me.descuento == null) me.descuento = 0;
+            console.log("d2(" + me.descuento + ")");
             if (me.nit == '') {
                 me.error_venta = 1;
                 me.errores.push('(*) Ingrese el NIT del cliente');
@@ -96869,6 +96924,54 @@ var render = function() {
                                     ]),
                                     _vm._v(" "),
                                     _c("td", [
+                                      _c("span", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: detalle.descuento_articulo,
+                                              expression:
+                                                "detalle.descuento_articulo"
+                                            }
+                                          ],
+                                          staticClass: "form-control",
+                                          attrs: {
+                                            type: "number",
+                                            step: "any"
+                                          },
+                                          domProps: {
+                                            value: detalle.descuento_articulo
+                                          },
+                                          on: {
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                detalle,
+                                                "descuento_articulo",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        }),
+                                        _vm._v(" "),
+                                        detalle.subtotal < 0
+                                          ? _c(
+                                              "span",
+                                              { staticStyle: { color: "red" } },
+                                              [
+                                                _vm._v(
+                                                  "Descuento es mayor que precio"
+                                                )
+                                              ]
+                                            )
+                                          : _vm._e()
+                                      ])
+                                    ]),
+                                    _vm._v(" "),
+                                    _c("td", [
                                       _c(
                                         "span",
                                         { staticStyle: { color: "red" } },
@@ -96904,7 +97007,7 @@ var render = function() {
                                             }
                                           }),
                                           _vm._v(
-                                            " \n                                                Stock: " +
+                                            " \n                                                    Stock: " +
                                               _vm._s(
                                                 detalle.stock - detalle.cantidad
                                               ) +
@@ -96921,11 +97024,10 @@ var render = function() {
                                       },
                                       [
                                         _vm._v(
-                                          "  " +
+                                          " " +
                                             _vm._s(
-                                              (
-                                                detalle.precio *
-                                                detalle.cantidad
+                                              parseFloat(
+                                                detalle.subtotal
                                               ).toFixed(2)
                                             ) +
                                             " "
@@ -97018,26 +97120,47 @@ var render = function() {
                       staticStyle: { "text-align": "right" }
                     },
                     [
-                      _c("input", {
-                        staticClass: "btn btn-success",
-                        attrs: { type: "button", value: "ARTICULO" },
-                        on: {
-                          click: function($event) {
-                            return _vm.abrirModalArticulo()
-                          }
-                        }
-                      }),
-                      _vm._v(" "),
                       _vm.tipo_comprobante == "FACTURA"
-                        ? _c("input", {
-                            staticClass: "btn btn-success",
-                            attrs: { type: "button", value: "FACTURAR" },
-                            on: {
-                              click: function($event) {
-                                return _vm.cobroFactura()
+                        ? _c("div", { staticClass: "input-group" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.descuento,
+                                  expression: "descuento"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: {
+                                type: "number",
+                                placeholder: "Descuento Adicional Q.",
+                                "aria-label": "Descuento",
+                                "aria-describedby": "basic-addon2"
+                              },
+                              domProps: { value: _vm.descuento },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.descuento = $event.target.value
+                                }
                               }
-                            }
-                          })
+                            }),
+                            _vm._v(" "),
+                            _c("div", { staticClass: "input-group-append" }, [
+                              _c("input", {
+                                staticClass: "btn btn-success",
+                                attrs: { type: "button", value: "FACTURA" },
+                                on: {
+                                  click: function($event) {
+                                    return _vm.cobroFactura()
+                                  }
+                                }
+                              })
+                            ])
+                          ])
                         : _vm._e(),
                       _vm._v(" "),
                       _vm.tipo_comprobante == "RECIBO"
@@ -97054,7 +97177,7 @@ var render = function() {
                               staticClass: "form-control",
                               attrs: {
                                 type: "number",
-                                placeholder: "Descuento Q.",
+                                placeholder: "Descuento Adicional Q.",
                                 "aria-label": "Descuento",
                                 "aria-describedby": "basic-addon2"
                               },
@@ -97128,6 +97251,8 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Precio")]),
         _vm._v(" "),
+        _c("th", [_vm._v("Descuento")]),
+        _vm._v(" "),
         _c("th", [_vm._v("Cantidad")]),
         _vm._v(" "),
         _c("th", [_vm._v("Subtotal")])
@@ -97142,7 +97267,7 @@ var staticRenderFns = [
       "td",
       {
         staticStyle: { "font-size": "22px" },
-        attrs: { colspan: "4", align: "right" }
+        attrs: { colspan: "5", align: "right" }
       },
       [_c("strong", [_vm._v("Total Q:")])]
     )
@@ -97152,7 +97277,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("tr", [
-      _c("td", { attrs: { colspan: "5" } }, [
+      _c("td", { attrs: { colspan: "6" } }, [
         _vm._v(" No hay articulos agregados ")
       ])
     ])
