@@ -52,7 +52,10 @@
             </template>       
             <template v-if="menu==15">
                 <ingreso_formulario></ingreso_formulario>
-            </template>  
+            </template>
+            <template v-if="menu==16">
+                <credito></credito>
+            </template>    
         @elseif(Auth::user()->id_rol == 2)
             <template v-if="menu==0">
                 <dashboard></dashboard>
@@ -65,7 +68,10 @@
             </template>      
             <template v-if="menu==13">
                 <deposito></deposito>
-            </template>     
+            </template> 
+            <template v-if="menu==16">
+                <credito></credito>
+            </template>    
         @elseif(Auth::user()->id_rol == 3)
             <template v-if="menu==0">
                 <dashboard></dashboard>

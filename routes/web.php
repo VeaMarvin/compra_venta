@@ -112,6 +112,15 @@ Route::group( ['middleware'=> ['auth']], function(){
             Route::get('/venta/recibo/pdf/{id}', 'VentaController@getVentaReciboPDF');
             Route::get('/venta/factura/pdf/{id}', 'VentaController@getVentaFacturaPDF');
             Route::get( '/venta/listar/pdf', 'VentaController@getVentaListPDF' );
+        // CREDITOS
+            Route::resource('/credito', 'CreditoController');
+            Route::put('/abono/baja/id', 'CreditoController@darBajaEstado');
+            Route::get( '/credito/get/cabecera', 'CreditoController@getCabecera' );
+            Route::get( '/credito/get/detalles',  'CreditoController@getDetalles' );
+            Route::get('/credito/recibo/pdf/{id}', 'CreditoController@getVentaReciboPDF');
+            Route::get('/credito/factura/pdf/{id}', 'CreditoController@getVentaFacturaPDF');
+            Route::get( '/credito/listar/pdf', 'CreditoController@getVentaListPDF' );
+            Route::get('/credito/get/abonos', 'CreditoController@getAbonos');
 
         // TALONARIO
         Route::resource( '/talonario', 'TalonarioController' );

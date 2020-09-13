@@ -47,6 +47,9 @@
                     <li @click="menu=5" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Ventas</a>
                     </li>
+                    <li @click="menu=16" class="nav-item">
+                        <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Créditos</a>
+                    </li>
                     <li @click="menu=14" class="nav-item">
                         <a class="nav-link" href="#"><i class="icon-basket-loaded"></i> Facturación</a>
                     </li>

@@ -21,6 +21,7 @@ Vue.component('dashboard', require('./components/Dashboard.vue'));
 Vue.component('consulta_ingreso', require('./components/ConsultaIngreso.vue'));
 Vue.component('consulta_venta', require('./components/ConsultaVenta.vue'));
 Vue.component('notificacion', require('./components/Notificacion.vue'));
+Vue.component('credito', require('./components/Credito.vue'));
 
 Vue.component('factura', require('./components/FacturaAbdiel.vue'));
 

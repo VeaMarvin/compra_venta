@@ -15,7 +15,7 @@ use Faker\Generator as Faker;
 
 $factory->define(App\Categoria::class, function (Faker $faker) {
     return [
-        'nombre' => $faker->unique(50)->jobTitle,
+        'nombre' => $faker->unique(25)->jobTitle,
         'descripcion' => $faker->text(125),
     ];
 });
