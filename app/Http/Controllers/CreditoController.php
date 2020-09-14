@@ -187,19 +187,40 @@ class CreditoController extends Controller
         //
     }
 
-    public function getVentaReciboPDF( Request $request, $id ) {
+    public function getCreditoResumenPDF( Request $request, $id ) {
         $venta = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
             ->join('personas AS vendedor', 'users.id_persona','=','vendedor.id')
+            ->join('creditos','ventas.id','=','creditos.id_venta')
             ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                         'ventas.serie_comprobante', 'ventas.created_at',
                         'ventas.fecha_hora','ventas.impuesto',
                         'ventas.total','ventas.descuento','ventas.estado',
                         'personas.nombre', 'personas.tipo_documento', 'personas.numero_documento',
                         'personas.direccion', 'personas.telefono', 'personas.email',
-                        'users.usuario', 'vendedor.nombre AS vendedor')
-            ->where('ventas.id', '=', $id)
+                        'users.usuario', 'vendedor.nombre AS vendedor',
+                        DB::raw('(ventas.total - SUM(creditos.abono)) AS saldo'))
+            ->where('ventas.id', '=', 1)
+            ->groupBy('creditos.id_venta')
             ->orderBy('ventas.id', 'desc')->take(1)->get();
+        
+        $abonos = Credito::where('id_venta','=',$id)
+            ->where('abono','>',0)->get();
+
+        $abonos->map(function($abonos){
+            $abonos->saldo=0;
+        });
+
+        foreach($abonos as $i=>$abono){
+            if($i == 0){
+                $abono->saldo = $venta[0]->total - $abono->abono;
+            }
+            else{
+                // var_dump($abonos[$i]->saldo);
+                $abono->saldo = $abonos[$i-1]->saldo - $abono->abono;
+            }
+        }
+        // dd($abonos);
         
         $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
             ->select(   'detalle_ventas.cantidad','detalle_ventas.precio', 
@@ -210,14 +231,14 @@ class CreditoController extends Controller
         $numero_venta = Venta::select('numero_comprobante')->where('id',$id)->get();
 
         //return view( 'pdf.venta_pdf', compact( ['venta','detalles'] ) );
-
-        $pdf= \PDF::loadView( 'pdf.venta_recibo_pdf', [
+        $pdf= \PDF::loadView( 'pdf.credito_pdf', [
             'venta'=>$venta, 
+            'abonos'=>$abonos,
             'detalles'=>$detalles, 
             'numero_venta'=>$numero_venta
         ] );
 
-        return $pdf->stream( 'venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
+        return $pdf->stream( 'credito-venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
     }
 
     public function getVentaFacturaPDF( Request $request, $id ) {

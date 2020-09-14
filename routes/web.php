@@ -117,7 +117,7 @@ Route::group( ['middleware'=> ['auth']], function(){
             Route::put('/abono/baja/id', 'CreditoController@darBajaEstado');
             Route::get( '/credito/get/cabecera', 'CreditoController@getCabecera' );
             Route::get( '/credito/get/detalles',  'CreditoController@getDetalles' );
-            Route::get('/credito/recibo/pdf/{id}', 'CreditoController@getVentaReciboPDF');
+            Route::get('/credito/resumen/pdf/{id}', 'CreditoController@getCreditoResumenPDF');
             Route::get('/credito/factura/pdf/{id}', 'CreditoController@getVentaFacturaPDF');
             Route::get( '/credito/listar/pdf', 'CreditoController@getVentaListPDF' );
             Route::get('/credito/get/abonos', 'CreditoController@getAbonos');

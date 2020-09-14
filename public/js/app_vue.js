@@ -100563,14 +100563,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
         },
         getPDF: function getPDF(id, tipo_comprobante) {
-            switch (tipo_comprobante) {
-                case 'FACTURA':
-                    window.open('/venta/factura/pdf/' + id, '_blank');break;
-                case 'RECIBO':
-                    window.open('/venta/recibo/pdf/' + id, '_blank');break;
-                default:
-                    break;
-            }
+            console.log(id);
+            window.open('/credito/resumen/pdf/' + id, '_blank');
         }
     },
     mounted: function mounted() {
