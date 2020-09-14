@@ -158,8 +158,8 @@
                     <td style="width: 25%;"></td>
                     <td style="text-align:center;">
                         <div style="text-align:center;">
-                            <b style="font-size: 10px;">RECIBO DE CAJA</b><br>
-                            <span  style="font-size: 16px; color: #d2121f;">No. {{ $item->numero_comprobante }}</span> 
+                            <b style="font-size: 10px;">DOCUMENTO</b><br>
+                            <span  style="font-size: 16px; color: #d2121f;">{{ $documento }}</span> 
                         </div>
                     </td>
                 </table>

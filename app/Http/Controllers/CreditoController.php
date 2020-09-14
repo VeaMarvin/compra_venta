@@ -204,23 +204,25 @@ class CreditoController extends Controller
             ->groupBy('creditos.id_venta')
             ->orderBy('ventas.id', 'desc')->take(1)->get();
         
+        $documento="";
+        switch($venta[0]->tipo_comprobante){
+            case "RECIBO":
+                $documento = "Recibo No. ".$venta[0]->numero_comprobante; break;
+            case "FACTURA":
+                $documento = "Factura No. ".$venta[0]->serie_comprobante."-".$venta[0]->numero_comprobante; break;
+        }
+        
         $abonos = Credito::where('id_venta','=',$id)
             ->where('abono','>',0)->get();
 
-        $abonos->map(function($abonos){
-            $abonos->saldo=0;
-        });
-
-        foreach($abonos as $i=>$abono){
-            if($i == 0){
+        foreach($abonos as $index=>$abono){
+            if($index == 0){
                 $abono->saldo = $venta[0]->total - $abono->abono;
             }
             else{
-                // var_dump($abonos[$i]->saldo);
-                $abono->saldo = $abonos[$i-1]->saldo - $abono->abono;
+                $abono->saldo = $abonos[$index-1]->saldo - $abono->abono;
             }
         }
-        // dd($abonos);
         
         $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
             ->select(   'detalle_ventas.cantidad','detalle_ventas.precio', 
@@ -234,7 +236,8 @@ class CreditoController extends Controller
         $pdf= \PDF::loadView( 'pdf.credito_pdf', [
             'venta'=>$venta, 
             'abonos'=>$abonos,
-            'detalles'=>$detalles, 
+            'detalles'=>$detalles,
+            'documento'=>$documento, 
             'numero_venta'=>$numero_venta
         ] );
 
