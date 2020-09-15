@@ -24,7 +24,7 @@ class CreditoController extends Controller
         if($buscar == '') {
             $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
                 ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->join('creditos','ventas.id','=','creditos.id_venta')
+                ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
                 ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                             'ventas.serie_comprobante','ventas.impuesto',
                             DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
@@ -32,14 +32,14 @@ class CreditoController extends Controller
                             'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
                             'ventas.created_at',DB::raw('(ventas.total - SUM(creditos.abono)) AS saldo'))
                 ->where('ventas.credito','=','1')
-                ->groupBy('creditos.id_venta')
+                ->groupBy('ventas.id')
                 ->orderBy('ventas.id', 'desc')->paginate(10);
         }
         else{
             if($criterio == 'fecha_hora') {
                 $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
                 ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->join('creditos','ventas.id','=','creditos.id_venta')
+                ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
                 ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                             'ventas.serie_comprobante','ventas.impuesto',
                             DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
@@ -51,10 +51,25 @@ class CreditoController extends Controller
                 ->groupBy('creditos.id_venta')
                 ->orderBy('ventas.fecha_hora', 'desc')->paginate(10);
             }
+            elseif($criterio == 'nombre') {
+                $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
+                ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
+                ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
+                ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
+                            'ventas.serie_comprobante','ventas.impuesto',
+                            DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
+                            'ventas.total','ventas.descuento','ventas.estado',
+                            'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
+                            'ventas.created_at',DB::raw('(ventas.total - SUM(creditos.abono)) AS saldo'))
+                ->where('ventas.credito','=','1')                            
+                ->where('personas.nombre', 'like', '%' . $buscar . '%')
+                ->groupBy('creditos.id_venta')
+                ->orderBy('ventas.fecha_hora', 'desc')->paginate(10);
+            }
             else {
                 $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
                 ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->join('creditos','ventas.id','=','creditos.id_venta')
+                ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
                 ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                             'ventas.serie_comprobante','ventas.impuesto',
                             DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
@@ -67,6 +82,7 @@ class CreditoController extends Controller
                 ->orderBy('ventas.id', 'desc')->paginate(10);
             }
         }
+        
         return [
             'paginacion' => [
                 'total' => $ventas->total(),
@@ -84,7 +100,7 @@ class CreditoController extends Controller
         $id = $request->id;
         $cabecera = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-            ->join('creditos','ventas.id','=','creditos.id_venta')
+            ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
             ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                         'ventas.serie_comprobante','ventas.fecha_hora','ventas.impuesto',
                         'ventas.total','ventas.descuento','ventas.estado', 'personas.nombre', 'users.usuario',
@@ -191,7 +207,7 @@ class CreditoController extends Controller
         $venta = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
             ->join('personas AS vendedor', 'users.id_persona','=','vendedor.id')
-            ->join('creditos','ventas.id','=','creditos.id_venta')
+            ->leftJoin('creditos','ventas.id','=','creditos.id_venta')
             ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
                         'ventas.serie_comprobante', 'ventas.created_at',
                         'ventas.fecha_hora','ventas.impuesto',

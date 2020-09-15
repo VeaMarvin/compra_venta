@@ -18,6 +18,7 @@
                                     <div class="input-group">
                                         <select class="form-control col-md-3" v-model="criterio">
                                             <option value="numero_comprobante">No. Factura</option>
+                                            <option value="nombre">Cliente</option>
                                         </select>
                                         <input type="text" v-model="txt_buscar" @keyup.enter="listarVenta(1, criterio, txt_buscar)" class="form-control" placeholder="Texto a buscar">
                                         <button type="submit" @click="listarVenta(1, criterio, txt_buscar)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
@@ -37,7 +38,6 @@
                                             <th>Cliente</th>
                                             <th>Serie / Factura</th>
                                             <th>Fecha</th>
-                                            <th>Descuento</th>
                                             <th>Saldo</th>
                                             <th>Total</th>
                                         </tr>
@@ -51,19 +51,13 @@
                                                 <button type="button" class="btn btn-info btn-sm" @click="getPDF(venta.id, venta.tipo_comprobante)">
                                                     <i class="icon-doc"></i>
                                                 </button> 
-                                                <template v-if="venta.estado == 'FACTURADO' && puede_anular(venta.created_at) == false">
-                                                    <button type="button" class="btn btn-danger btn-sm" @click="anularVenta(venta.id)">
-                                                        <i class="icon-trash"></i>
-                                                    </button>
-                                                </template> &nbsp;
                                             </td>
                                             <td v-text="venta.usuario">  </td>  
                                             <td v-text="venta.nombre">  </td>  
                                             <td v-text="venta.serie_comprobante + ' - ' + venta.numero_comprobante"> </td>  
-                                            <td v-text="venta.fecha_hora">  </td>  
-                                            <td v-if="venta.descuento > 0" v-text="venta.descuento" align="right">  </td>
-                                            <td v-else  v-text=" ">  </td>
-                                            <td v-text="venta.saldo" align="right">  </td>
+                                            <td v-text="venta.fecha_hora">  </td> 
+                                            <td v-if="venta.saldo == null" align="right">{{venta.total}}</td>
+                                            <td v-else align="right">{{venta.saldo}}</td>
                                             <td v-text="venta.total" align="right">  </td>
                                         </tr>
 
@@ -99,7 +93,7 @@
                                 <div class="col-md-3" style="margin-bottom:2%;">
                                     <div class="form-control">
                                         <b><label for="">Saldo</label></b>
-                                        <p style="font-size: 30px; color:red;">Q. {{saldo.toFixed(2)}}</p>
+                                        <p style="font-size: 30px; color:red;">Q. {{parseFloat(saldo).toFixed(2)}}</p>
                                     </div>
                                 </div>
                                 <div class="col-md-3" style="margin-bottom:2%;">
@@ -151,8 +145,8 @@
                                                 <th>Saldo</th>
                                             </tr>
                                         </thead>
-                                        <tbody v-if="lista_abonos.length >= 1">
-                                            <tr v-for="(abono, indice ) in lista_abonos">
+                                        <tbody v-if="lista_abonos.length >0">
+                                            <tr v-for="(abono, indice) in lista_abonos">
                                                 <td>
                                                     <button type="button" class="btn btn-info btn-sm" @click="getPDF(abono.id)">
                                                         <i class="icon-doc"></i>
@@ -179,7 +173,7 @@
                                         </tbody>
                                         <tbody v-else>
                                             <tr>
-                                                <td colspan="4"> No hay articulos agregados </td>
+                                                <td colspan="5"> No se ha realizado ningún abono </td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -299,7 +293,7 @@
         methods: {
             abonar(){
                 let me = this;
-                if(!(parseFloat(me.abono)<=0 || parseFloat(me.abono)>me.saldo)){
+                if(!(parseFloat(me.abono)<=0 || parseFloat(me.abono)>me.saldo.toFixed(2))){
                     axios.post('/credito',{
                         'id_venta': me.id_venta,
                         'abono': me.abono
@@ -337,15 +331,24 @@
                 
             },
             calcularSaldos(){
+                
+
                 var registros = this.lista_abonos.length;
                 var total = this.total;
-                for(var i=0; i<this.lista_abonos.length; i++){
-                    if(i==0) this.lista_abonos[i].saldo = total - this.lista_abonos[i].abono;
-                    else{
-                        this.lista_abonos[i].saldo = this.lista_abonos[i-1].saldo - this.lista_abonos[i].abono;
+
+                if(registros>0){
+                    for(var i=0; i<this.lista_abonos.length; i++){
+                        if(i==0) this.lista_abonos[i].saldo = total - this.lista_abonos[i].abono;
+                        else{
+                            this.lista_abonos[i].saldo = this.lista_abonos[i-1].saldo - this.lista_abonos[i].abono;
+                        }
                     }
+                    this.saldo = this.lista_abonos[registros-1].saldo;
                 }
-                this.saldo = this.lista_abonos[registros-1].saldo;
+                else{
+                    this.saldo = parseFloat(this.total);
+                } 
+                
                 this.listarVenta(1, this.criterio, this.txt_buscar);
             },
             puede_anular(fecha){
@@ -599,13 +602,12 @@
                 })
             },
             getPDF(id, tipo_comprobante){
-                console.log(id);
                 window.open( '/credito/resumen/pdf/' + id , '_blank' );
                 
             }
         },
         mounted() {
-            console.log('Component Venta cargado.')
+            console.log('Component Credito cargado.')
             this.listarVenta(1, this.criterio, this.txt_buscar);
         }
     }

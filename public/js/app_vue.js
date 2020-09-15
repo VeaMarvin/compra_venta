@@ -100196,12 +100196,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -100289,7 +100283,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     methods: {
         abonar: function abonar() {
             var me = this;
-            if (!(parseFloat(me.abono) <= 0 || parseFloat(me.abono) > me.saldo)) {
+            if (!(parseFloat(me.abono) <= 0 || parseFloat(me.abono) > me.saldo.toFixed(2))) {
                 axios.post('/credito', {
                     'id_venta': me.id_venta,
                     'abono': me.abono
@@ -100321,14 +100315,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             }
         },
         calcularSaldos: function calcularSaldos() {
+
             var registros = this.lista_abonos.length;
             var total = this.total;
-            for (var i = 0; i < this.lista_abonos.length; i++) {
-                if (i == 0) this.lista_abonos[i].saldo = total - this.lista_abonos[i].abono;else {
-                    this.lista_abonos[i].saldo = this.lista_abonos[i - 1].saldo - this.lista_abonos[i].abono;
+
+            if (registros > 0) {
+                for (var i = 0; i < this.lista_abonos.length; i++) {
+                    if (i == 0) this.lista_abonos[i].saldo = total - this.lista_abonos[i].abono;else {
+                        this.lista_abonos[i].saldo = this.lista_abonos[i - 1].saldo - this.lista_abonos[i].abono;
+                    }
                 }
+                this.saldo = this.lista_abonos[registros - 1].saldo;
+            } else {
+                this.saldo = parseFloat(this.total);
             }
-            this.saldo = this.lista_abonos[registros - 1].saldo;
+
             this.listarVenta(1, this.criterio, this.txt_buscar);
         },
         puede_anular: function puede_anular(fecha) {
@@ -100563,12 +100564,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             });
         },
         getPDF: function getPDF(id, tipo_comprobante) {
-            console.log(id);
             window.open('/credito/resumen/pdf/' + id, '_blank');
         }
     },
     mounted: function mounted() {
-        console.log('Component Venta cargado.');
+        console.log('Component Credito cargado.');
         this.listarVenta(1, this.criterio, this.txt_buscar);
     }
 });
@@ -100633,7 +100633,11 @@ var render = function() {
                                 "option",
                                 { attrs: { value: "numero_comprobante" } },
                                 [_vm._v("No. Factura")]
-                              )
+                              ),
+                              _vm._v(" "),
+                              _c("option", { attrs: { value: "nombre" } }, [
+                                _vm._v("Cliente")
+                              ])
                             ]
                           ),
                           _vm._v(" "),
@@ -100740,73 +100744,40 @@ var render = function() {
                             "tbody",
                             _vm._l(_vm.lista_venta, function(venta) {
                               return _c("tr", [
-                                _c(
-                                  "td",
-                                  [
-                                    _c(
-                                      "button",
-                                      {
-                                        staticClass: "btn btn-success btn-sm",
-                                        attrs: { type: "button" },
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.mostrarDetalle(venta.id)
-                                          }
+                                _c("td", [
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-success btn-sm",
+                                      attrs: { type: "button" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.mostrarDetalle(venta.id)
                                         }
-                                      },
-                                      [_c("i", { staticClass: "icon-eye" })]
-                                    ),
-                                    _vm._v(
-                                      "  \n                                            "
-                                    ),
-                                    _c(
-                                      "button",
-                                      {
-                                        staticClass: "btn btn-info btn-sm",
-                                        attrs: { type: "button" },
-                                        on: {
-                                          click: function($event) {
-                                            return _vm.getPDF(
-                                              venta.id,
-                                              venta.tipo_comprobante
-                                            )
-                                          }
-                                        }
-                                      },
-                                      [_c("i", { staticClass: "icon-doc" })]
-                                    ),
-                                    _vm._v(" "),
-                                    venta.estado == "FACTURADO" &&
-                                    _vm.puede_anular(venta.created_at) == false
-                                      ? [
-                                          _c(
-                                            "button",
-                                            {
-                                              staticClass:
-                                                "btn btn-danger btn-sm",
-                                              attrs: { type: "button" },
-                                              on: {
-                                                click: function($event) {
-                                                  return _vm.anularVenta(
-                                                    venta.id
-                                                  )
-                                                }
-                                              }
-                                            },
-                                            [
-                                              _c("i", {
-                                                staticClass: "icon-trash"
-                                              })
-                                            ]
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "icon-eye" })]
+                                  ),
+                                  _vm._v(
+                                    "  \n                                            "
+                                  ),
+                                  _c(
+                                    "button",
+                                    {
+                                      staticClass: "btn btn-info btn-sm",
+                                      attrs: { type: "button" },
+                                      on: {
+                                        click: function($event) {
+                                          return _vm.getPDF(
+                                            venta.id,
+                                            venta.tipo_comprobante
                                           )
-                                        ]
-                                      : _vm._e(),
-                                    _vm._v(
-                                      "  \n                                        "
-                                    )
-                                  ],
-                                  2
-                                ),
+                                        }
+                                      }
+                                    },
+                                    [_c("i", { staticClass: "icon-doc" })]
+                                  )
+                                ]),
                                 _vm._v(" "),
                                 _c("td", {
                                   domProps: {
@@ -100836,21 +100807,13 @@ var render = function() {
                                   }
                                 }),
                                 _vm._v(" "),
-                                venta.descuento > 0
-                                  ? _c("td", {
-                                      attrs: { align: "right" },
-                                      domProps: {
-                                        textContent: _vm._s(venta.descuento)
-                                      }
-                                    })
-                                  : _c("td", {
-                                      domProps: { textContent: _vm._s() }
-                                    }),
-                                _vm._v(" "),
-                                _c("td", {
-                                  attrs: { align: "right" },
-                                  domProps: { textContent: _vm._s(venta.saldo) }
-                                }),
+                                venta.saldo == null
+                                  ? _c("td", { attrs: { align: "right" } }, [
+                                      _vm._v(_vm._s(venta.total))
+                                    ])
+                                  : _c("td", { attrs: { align: "right" } }, [
+                                      _vm._v(_vm._s(venta.saldo))
+                                    ]),
                                 _vm._v(" "),
                                 _c("td", {
                                   attrs: { align: "right" },
@@ -100994,7 +100957,12 @@ var render = function() {
                                   color: "red"
                                 }
                               },
-                              [_vm._v("Q. " + _vm._s(_vm.saldo.toFixed(2)))]
+                              [
+                                _vm._v(
+                                  "Q. " +
+                                    _vm._s(parseFloat(_vm.saldo).toFixed(2))
+                                )
+                              ]
                             )
                           ])
                         ]
@@ -101119,7 +101087,7 @@ var render = function() {
                           [
                             _vm._m(8),
                             _vm._v(" "),
-                            _vm.lista_abonos.length >= 1
+                            _vm.lista_abonos.length > 0
                               ? _c(
                                   "tbody",
                                   [
@@ -101373,8 +101341,6 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Fecha")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Descuento")]),
-        _vm._v(" "),
         _c("th", [_vm._v("Saldo")]),
         _vm._v(" "),
         _c("th", [_vm._v("Total")])
@@ -101450,8 +101416,8 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("tr", [
-      _c("td", { attrs: { colspan: "4" } }, [
-        _vm._v(" No hay articulos agregados ")
+      _c("td", { attrs: { colspan: "5" } }, [
+        _vm._v(" No se ha realizado ningún abono ")
       ])
     ])
   }
