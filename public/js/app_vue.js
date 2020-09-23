@@ -96223,6 +96223,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
 
 
 
@@ -96241,6 +96243,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             total: 0.0,
             total_impuesto: 0.0,
             total_parcial: 0.0,
+            isCredito: false,
             lista_venta: [],
             lista_clientes: [],
             lista_detalle: [],
@@ -96440,9 +96443,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             var me = this;
             me.errores = [];
             me.error_venta = 0;
-            console.log("d1(" + me.descuento + ")");
             if (me.descuento == null) me.descuento = 0;
-            console.log("d2(" + me.descuento + ")");
             if (me.nit == '') {
                 me.error_venta = 1;
                 me.errores.push('(*) Ingrese el NIT del cliente');
@@ -96492,7 +96493,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                     'impuesto': me.impuesto,
                     'total': me.total,
                     'descuento': me.descuento,
-                    'data': me.lista_detalle
+                    'data': me.lista_detalle,
+                    'credito': me.isCredito
                 }).then(function (res) {
                     swal({
                         type: 'success',
@@ -97089,7 +97091,7 @@ var render = function() {
                         }
                       }),
                       _vm._v(
-                        " FACTURA\n                                          \n                                    "
+                        " FACTURA\n                                       \n                                    "
                       ),
                       _c("input", {
                         directives: [
@@ -97110,7 +97112,47 @@ var render = function() {
                           }
                         }
                       }),
-                      _vm._v(" RECIBO\n                                ")
+                      _vm._v(
+                        " RECIBO\n                                            \n                                    "
+                      ),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.isCredito,
+                            expression: "isCredito"
+                          }
+                        ],
+                        attrs: { type: "checkbox", id: "checkbox" },
+                        domProps: {
+                          checked: Array.isArray(_vm.isCredito)
+                            ? _vm._i(_vm.isCredito, null) > -1
+                            : _vm.isCredito
+                        },
+                        on: {
+                          change: function($event) {
+                            var $$a = _vm.isCredito,
+                              $$el = $event.target,
+                              $$c = $$el.checked ? true : false
+                            if (Array.isArray($$a)) {
+                              var $$v = null,
+                                $$i = _vm._i($$a, $$v)
+                              if ($$el.checked) {
+                                $$i < 0 && (_vm.isCredito = $$a.concat([$$v]))
+                              } else {
+                                $$i > -1 &&
+                                  (_vm.isCredito = $$a
+                                    .slice(0, $$i)
+                                    .concat($$a.slice($$i + 1)))
+                              }
+                            } else {
+                              _vm.isCredito = $$c
+                            }
+                          }
+                        }
+                      }),
+                      _vm._v(" CRÉDITO\n                                ")
                     ])
                   ]),
                   _vm._v(" "),

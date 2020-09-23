@@ -197,6 +197,7 @@
                         <th>Artículo</th>
                         <th>Cantidad</th>
                         <th>Precio</th>
+                        <th>Descuento</th>
                         <th>Sub Total</th>
                     </tr>
                 </thead>
@@ -206,6 +207,7 @@
                             <td> {{ $item->nombre }} </td>
                             <td style="text-align:center;"> {{ $item->cantidad }} </td>
                             <td style="text-align:right;"> {{ $item->precio }} </td>
+                            <td style="text-align:right;"> {{ $item->descuento }} </td>
                             <td style="text-align:right;"> {{ sprintf('%0.2f',($item->cantidad * ($item->precio - $item->descuento))) }} </td>
                         </tr>
                     @endforeach
@@ -213,7 +215,8 @@
                     @if($item->descuento > 0)
                         <tr>    
                             <td> Descuento </td>
-                            <td style="text-align:center;">  </td>
+                            <td></td>
+                            <td></td>
                             <td style="text-align:right;"> {{ $item->precio }} </td>
                             <td style="text-align:right;"> - {{ $item->descuento }} </td>
                         </tr>
@@ -226,6 +229,7 @@
                         <td>&nbsp;</td>
                     </tr>
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td style="text-align:right;"> <b>Total</b> </td>

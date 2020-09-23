@@ -192,8 +192,10 @@ class VentaController extends Controller {
             
             $venta->fecha_hora = $time->toDateTimeString();
             $venta->impuesto = Venta::IMPUESTO;
-            $venta->descuento = $request->descuento;
-            $venta->total = $request->total - $descuento;            
+            if(isset($request->descuento)) $venta->descuento = $request->descuento;
+            else $venta->descuento=0;
+            $venta->total = $request->total - $descuento;  
+            $venta->credito = $request->credito;          
             $venta->estado = Venta::ESTADO_REGISTRADO;
             $venta->save();
 
@@ -224,7 +226,8 @@ class VentaController extends Controller {
                     $detalle->id_articulo = $detalles[$i]['id_articulo'];
                     $detalle->cantidad = $detalles[$i]['cantidad'];
                     $detalle->precio = $articulo->precio_venta;
-                    $detalle->descuento = $detalles[$i]['descuento_articulo'];
+                    if(isset($detalles[$i]['descuento_articulo'])) $detalle->descuento = $detalles[$i]['descuento_articulo'];
+                    else $detalle->descuento = 0;
                     $detalle->save();
                 }
             } else  {

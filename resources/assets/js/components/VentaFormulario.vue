@@ -147,8 +147,10 @@
                                 <div class="col-md-5">
                                     <section>
                                         <input type="radio" v-model="tipo_comprobante" value="FACTURA"> FACTURA
-                                        &nbsp; &nbsp; &nbsp; 
+                                        &nbsp; &nbsp;
                                         <input type="radio" v-model="tipo_comprobante" value="RECIBO"> RECIBO
+                                        &nbsp; &nbsp; &nbsp; &nbsp; 
+                                        <input type="checkbox" id="checkbox" v-model="isCredito"> CRÉDITO
                                     </section>
                                 </div>
                                 <div class="col-md-5" style="text-align: right;">
@@ -199,10 +201,12 @@ import vSelect from "vue-select";
                 total: 0.0,
                 total_impuesto: 0.0,
                 total_parcial: 0.0,
+                isCredito: false,
                 lista_venta: [],
                 lista_clientes: [],
                 lista_detalle: [],
                 validaciones: {},
+                
 
                 txt_buscar_articulo: '',
                 criterio_articulo: 'codigo',
@@ -418,9 +422,7 @@ import vSelect from "vue-select";
                 let me = this;
                 me.errores = [];
                 me.error_venta = 0;
-                console.log("d1("+me.descuento+")");
                 if(me.descuento==null) me.descuento=0;
-                console.log("d2("+me.descuento+")");
                 if(me.nit == '') {
                     me.error_venta = 1;
                     me.errores.push('(*) Ingrese el NIT del cliente'); 
@@ -471,7 +473,8 @@ import vSelect from "vue-select";
                             'impuesto': me.impuesto,
                             'total': me.total,
                             'descuento': me.descuento,
-                            'data': me.lista_detalle
+                            'data': me.lista_detalle,
+                            'credito': me.isCredito
                         })
                         .then( function(res){
                             swal({
