@@ -24,7 +24,7 @@ $factory->define(App\Articulo::class, function (Faker $faker) {
     return [
         'id_categoria' => App\Categoria::all()->random()->id,
         'codigo' => $faker->unique()->randomElement([$faker->bothify('########'),$faker->bothify('?###??###')]),
-        'nombre' => $faker->unique()->jobTitle,
+        'nombre' => $faker->unique()->company,
         'precio_venta' => $faker->randomFloat(2, 1, 100),
         'stock' => $faker->numerify('####'),
         'descripcion' => $faker->text(200),

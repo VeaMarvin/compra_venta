@@ -100236,8 +100236,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -101141,25 +101139,6 @@ var render = function() {
                                         _c(
                                           "td",
                                           [
-                                            _c(
-                                              "button",
-                                              {
-                                                staticClass:
-                                                  "btn btn-info btn-sm",
-                                                attrs: { type: "button" },
-                                                on: {
-                                                  click: function($event) {
-                                                    return _vm.getPDF(abono.id)
-                                                  }
-                                                }
-                                              },
-                                              [
-                                                _c("i", {
-                                                  staticClass: "icon-doc"
-                                                })
-                                              ]
-                                            ),
-                                            _vm._v(" "),
                                             _vm.puede_anular(
                                               abono.created_at
                                             ) == false && abono.abono > 0

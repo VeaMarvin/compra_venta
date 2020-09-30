@@ -148,9 +148,7 @@
                                         <tbody v-if="lista_abonos.length >0">
                                             <tr v-for="(abono, indice) in lista_abonos">
                                                 <td>
-                                                    <button type="button" class="btn btn-info btn-sm" @click="getPDF(abono.id)">
-                                                        <i class="icon-doc"></i>
-                                                    </button> 
+                                                    
                                                     <template v-if="(puede_anular(abono.created_at) == false) && (abono.abono > 0)">
                                                         <button type="button" class="btn btn-danger btn-sm" @click="anularAbono(abono.id)">
                                                             <i class="icon-trash"></i>

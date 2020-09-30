@@ -234,9 +234,11 @@ class CreditoController extends Controller
         foreach($abonos as $index=>$abono){
             if($index == 0){
                 $abono->saldo = $venta[0]->total - $abono->abono;
+                $abono->saldo = number_format($abono->saldo, 2, '.', ',');
             }
             else{
                 $abono->saldo = $abonos[$index-1]->saldo - $abono->abono;
+                $abono->saldo = number_format($abono->saldo, 2, '.', ',');
             }
         }
         
@@ -257,51 +259,8 @@ class CreditoController extends Controller
             'numero_venta'=>$numero_venta
         ] );
 
-        return $pdf->stream( 'credito-venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
-    }
-
-    public function getVentaFacturaPDF( Request $request, $id ) {
-        $venta = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
-            ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-            ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                        'ventas.serie_comprobante', 'ventas.created_at',
-                        'ventas.fecha_hora','ventas.impuesto',
-                        'ventas.total','ventas.descuento','ventas.estado',
-                        'personas.nombre', 'personas.tipo_documento', 'personas.numero_documento',
-                        'personas.direccion', 'personas.telefono', 'personas.email',
-                        'users.usuario' )
-            ->where('ventas.id', '=', $id)
-            ->orderBy('ventas.id', 'desc')->take(1)->get();
-        
-        $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
-            ->select(   'detalle_ventas.cantidad','detalle_ventas.precio', 
-            'detalle_ventas.descuento', 'articulos.nombre', 'articulos.codigo', 'articulos.descripcion' )
-            ->where('detalle_ventas.id_venta','=',$id)
-            ->orderBy('detalle_ventas.id', 'desc')->get();
-        
-        $numero_venta = Venta::select('numero_comprobante')->where('id',$id)->get();
-
-        //return view( 'pdf.venta_pdf', compact( ['venta','detalles'] ) );
-        $dia = date("d",strtotime($venta[0]->fecha_hora));
-        $mes = date("m",strtotime($venta[0]->fecha_hora));
-        $anio = date("Y",strtotime($venta[0]->fecha_hora));
-        $filas = count($detalles);
-        $printFilas = '';
-        for($i=1;$i<=17-$filas;$i++){
-            $printFilas=$printFilas.'<tr><td>&nbsp;</td></tr>';
-        }
-
-        $pdf= \PDF::loadView( 'pdf.venta_factura_pdf', [
-            'venta'=>$venta, 
-            'detalles'=>$detalles, 
-            'numero_venta'=>$numero_venta,
-            'dia'=>$dia,
-            'mes'=>$mes,
-            'anio'=>$anio,
-            'filas'=>$printFilas,
-        ] );
-
-        return $pdf->stream( 'venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
+        // return $pdf->stream( 'credito-venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
+        return $pdf->stream( 'CREDITO ' . $documento . '.pdf' );
     }
 
     public function validaciones(Request $request, $id, $cf=false){
