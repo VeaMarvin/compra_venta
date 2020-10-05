@@ -115,7 +115,11 @@
                                                         <i class="icon-close"></i>
                                                     </button> {{ detalle.codigo }}
                                                 </td>
-                                                <td v-text="detalle.articulo"> </td>
+                                                <td>
+                                                    {{ detalle.articulo }}
+                                                    <br>
+                                                    <small>{{ detalle.descripcion }}</small>
+                                                </td>
                                                 <td>  {{ detalle.precio }}  </td>
                                                 <td>
                                                     <span>
@@ -353,6 +357,7 @@ import vSelect from "vue-select";
             },
             getDatosArticulo(item) {
                 let me = this;
+                console.log(item)
                 me.loading = true;
                 me.id_articulo = item.id;
 
@@ -372,12 +377,14 @@ import vSelect from "vue-select";
                         precio: item.precio_venta,
                         subtotal: item.subtotal,
                         descuento: item.descuento_articulo,
-                        stock: item.stock
+                        stock: item.stock,
+                        descripcion: item.descripcion
                     });
                 }
                 me.codigo = ''
                 me.cantidad = 1
                 me.selected = null
+                me.lista_articulo = []
             },
 
             verificarArticuloEnDetalle(id) {

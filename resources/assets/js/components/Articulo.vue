@@ -11,7 +11,7 @@
                         <i class="icon-plus"></i>&nbsp;Nuevo
                     </button>
                     <button type="button" @click="cargarPDF()" class="btn btn-info">
-                        <i class="icon-doc"></i>&nbsp;Reporte PDF
+                        <i class="icon-doc"></i>&nbsp;Reporte del Inventario actual
                     </button>
                 </div>
                 <div class="card-body">
@@ -119,14 +119,6 @@
                                         <option value="0" disabled>Selecciona categoria</option>
                                         <option v-for="categoria in lista_categoria" v-text="categoria.nombre" :value="categoria.id"></option>
                                     </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-md-3 form-control-label" for="text-input">Código</label>
-                                <div class="col-md-9">
-                                    <input type="text" v-model="codigo" @input="codigo = $event.target.value.toUpperCase()" class="form-control" placeholder="Código">
-                                    <barcode :value="codigo" :options="{ format: 'EAN-13' }" width="1">
-                                    </barcode>
                                 </div>
                             </div>
                             <div class="form-group row">

@@ -65,11 +65,6 @@
             
         </div>
     </div>
-    
-    <footer class="app-footer">
-        <span>&copy; 2019</span>
-    </footer>
-    
     <script src="js/app_vue.js"></script>
     <script src="js/plantilla_script.js"></script>
 </body>

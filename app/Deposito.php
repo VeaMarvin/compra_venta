@@ -14,6 +14,7 @@ class Deposito extends Model
         'foto',
         'monto',
         'id_empleado',
+        'compra_venta'
     ];  
 
     public function setBoletaAttribute($value)

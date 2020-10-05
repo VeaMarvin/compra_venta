@@ -92,6 +92,7 @@
                     <th>Boleta</th>
                     <th>Monto</th>
                     <th>Fecha</th>
+                    <th>Tipo de Boleta</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,6 +102,11 @@
                         <td> {{ $data->boleta }} </td>
                         <td> {{ $data->monto }} </td>
                         <td> {{ $data->fecha }} </td>
+                        @if ($data->compra_venta == 1)
+                            <td>COMPRA</td>
+                        @else
+                            <td>VENTA</td>
+                        @endif
                     </tr>
                 @endforeach
             </tbody>

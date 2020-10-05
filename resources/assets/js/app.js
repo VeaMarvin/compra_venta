@@ -23,8 +23,6 @@ Vue.component('consulta_venta', require('./components/ConsultaVenta.vue'));
 Vue.component('notificacion', require('./components/Notificacion.vue'));
 Vue.component('credito', require('./components/Credito.vue'));
 
-Vue.component('factura', require('./components/FacturaAbdiel.vue'));
-
 const app = new Vue({
     el: '#app',
     data: {

@@ -91,9 +91,8 @@
                     <th>Codigo</th>
                     <th>Nombre</th>
                     <th>Categoria</th>
-                    <th>Precio de venta</th>
+                    <th>Precio de venta Q.</th>
                     <th>Stock</th>
-                    <!--<th>Codigo de barras</th>-->
                     <th>Estado</th>
                 </tr>
             </thead>
@@ -103,15 +102,8 @@
                         <td> {{ $articulo->codigo }} </td>
                         <td> {{ $articulo->nombre }} </td>
                         <td> {{ $articulo->nombre_categoria }} </td>
-                        <td> {{ $articulo->precio_venta }} </td>
+                        <td> {{ number_format($articulo->precio_venta,2,'.',',') }} </td>
                         <td> {{ $articulo->stock }} </td>
-                        <!--<td>
-                            <barcode :value="$articulo->codigo" :options="{ format: 'EAN-13' }" width="1">
-                            </barcode>
-                        </td>
-                        <td> 
-                            <img src="php/barcode.php?text={{$articulo->codigo}}&size=30&codetype=Code39&print=true" alt="Err" />
-                        </td>-->
                         <td>
                             {{ $articulo->estado ? 'Alta' : 'Baja' }}
                         </td>
@@ -124,10 +116,5 @@
         <p> <strong> Total de registros: {{ $cantidad }} </strong> </p>
     </div>
 </body>
-
-<script>
-    import VueBarcode from 'vue-barcode';
-    
-</script>
 
 </html>

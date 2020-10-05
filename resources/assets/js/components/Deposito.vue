@@ -51,7 +51,9 @@
                                 <td> <img :src="deposito.foto" width="25%" height="25%" alt="deposito.foto"> </td>  
                                 <td v-text="deposito.fecha">  </td>  
                                 <td v-text="deposito.monto">  </td>   
-                                <td v-text="deposito.nombre">  </td>  
+                                <td v-text="deposito.nombre">  </td>   
+                                <td v-if="deposito.compra_venta == 0">VENTA</td>  
+                                <td v-if="deposito.compra_venta == 1">COMPRA</td> 
                             </tr>
 
                         </tbody>
@@ -115,7 +117,16 @@
                                 <div class="col-md-9">
                                   <input id="foto" type="file" ref="foto" name="foto" @change="addFile()">                                   
                                 </div>
-                            </div>                            
+                            </div>     
+                            <div class="form-group row">
+                                <div class="col-md-9">
+                                    <section>
+                                        <input type="radio" v-model="compra_venta" value="1"> BOLETA DE COMPRA
+                                        &nbsp; &nbsp;
+                                        <input type="radio" v-model="compra_venta" value="0"> BOELTA DE VENTA
+                                    </section>                                  
+                                </div>
+                            </div>                              
                             <div v-show="error_deposito" class="form-group row" style="display:flex; justify-content: center;">
                                 
                                 <div v-if="error_deposito==1" v-for="error in errores">
@@ -151,6 +162,7 @@
                 boleta: '',
                 fecha: '',
                 monto: '',
+                compra_venta: '',
                 lista_deposito: [],
                 modal: 0,
                 titulo_modal: '',
@@ -236,6 +248,7 @@
                     formData.append('foto', this.foto);
                     formData.append('fecha', this.fecha);
                     formData.append('monto', this.monto);
+                    formData.append('compra_venta', this.compra_venta);
 
                     axios.post('/deposito', formData, {headers: {'Content-Type': 'multipart/form-data'}})
                         .then( function(res){
@@ -319,6 +332,7 @@
                 this.foto = '';
                 this.fecha = '';
                 this.monto = '';
+                this.compra_venta = '';
                 this.tipo_accion = 0;
                 this.error_deposito = 0;
             },
@@ -331,6 +345,7 @@
                         'foto': me.foto,
                         'fecha': me.fecha,
                         'monto': me.monto,
+                        'compra_venta': me.compra_venta
                     })             
                     .then( function(res){
                         me.cerrarModal();

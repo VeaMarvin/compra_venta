@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\User;
 use App\Venta;
 use App\Articulo;
@@ -14,49 +15,73 @@ use App\Turno;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class VentaController extends Controller {
-    
-    public function index(Request $request) {
+class VentaController extends Controller
+{
 
-        //if(!$request->ajax()) return redirect( '/' );
-
+    public function index(Request $request)
+    {
         $criterio = $request->criterio;
         $buscar = $request->buscar;
-        if($buscar == '') {
+        if ($buscar == '') {
             $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
                 ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                            'ventas.serie_comprobante','ventas.impuesto',
-                            DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
-                            'ventas.total','ventas.descuento','ventas.estado',
-                            'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
-                            'ventas.created_at' )
+                ->select(
+                    'ventas.id',
+                    'ventas.tipo_comprobante',
+                    'ventas.numero_comprobante',
+                    'ventas.serie_comprobante',
+                    'ventas.impuesto',
+                    DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
+                    'ventas.total',
+                    'ventas.descuento',
+                    'ventas.estado',
+                    'personas.id as cliente_id',
+                    'personas.nombre',
+                    'users.usuario',
+                    'ventas.created_at'
+                )
                 ->orderBy('ventas.id', 'desc')->paginate(10);
-        }
-        else{
-            if($criterio == 'fecha_hora') {
+        } else {
+            if ($criterio == 'fecha_hora') {
                 $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
-                ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                            'ventas.serie_comprobante','ventas.impuesto',
-                            DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
-                            'ventas.total','ventas.descuento','ventas.estado',
-                            'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
-                            'ventas.created_at' )
-                ->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])
-                ->orderBy('ventas.fecha_hora', 'desc')->paginate(10);
-            }
-            else {
+                    ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
+                    ->select(
+                        'ventas.id',
+                        'ventas.tipo_comprobante',
+                        'ventas.numero_comprobante',
+                        'ventas.serie_comprobante',
+                        'ventas.impuesto',
+                        DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
+                        'ventas.total',
+                        'ventas.descuento',
+                        'ventas.estado',
+                        'personas.id as cliente_id',
+                        'personas.nombre',
+                        'users.usuario',
+                        'ventas.created_at'
+                    )
+                    ->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])
+                    ->orderBy('ventas.fecha_hora', 'desc')->paginate(10);
+            } else {
                 $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
-                ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-                ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                            'ventas.serie_comprobante','ventas.impuesto',
-                            DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
-                            'ventas.total','ventas.descuento','ventas.estado',
-                            'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
-                            'ventas.created_at' )
-                ->where('ventas.' . $criterio, 'like', '%' . $buscar . '%')
-                ->orderBy('ventas.id', 'desc')->paginate(10);
+                    ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
+                    ->select(
+                        'ventas.id',
+                        'ventas.tipo_comprobante',
+                        'ventas.numero_comprobante',
+                        'ventas.serie_comprobante',
+                        'ventas.impuesto',
+                        DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
+                        'ventas.total',
+                        'ventas.descuento',
+                        'ventas.estado',
+                        'personas.id as cliente_id',
+                        'personas.nombre',
+                        'users.usuario',
+                        'ventas.created_at'
+                    )
+                    ->where('ventas.' . $criterio, 'like', '%' . $buscar . '%')
+                    ->orderBy('ventas.id', 'desc')->paginate(10);
             }
         }
         return [
@@ -72,61 +97,92 @@ class VentaController extends Controller {
         ];
     }
 
-    public function getCabecera(Request $request){
+    public function getCabecera(Request $request)
+    {
         $id = $request->id;
         $cabecera = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-            ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                        'ventas.serie_comprobante','ventas.fecha_hora','ventas.impuesto',
-                        'ventas.total','ventas.descuento','ventas.estado', 'personas.nombre', 'users.usuario',
-                        'ventas.created_at' )
-            ->where('ventas.id','=',$id)
+            ->select(
+                'ventas.id',
+                'ventas.tipo_comprobante',
+                'ventas.numero_comprobante',
+                'ventas.serie_comprobante',
+                'ventas.fecha_hora',
+                'ventas.impuesto',
+                'ventas.total',
+                'ventas.descuento',
+                'ventas.estado',
+                'personas.nombre',
+                'users.usuario',
+                'ventas.created_at'
+            )
+            ->where('ventas.id', '=', $id)
             ->orderBy('ventas.id', 'desc')->take(1)->get();
-        return [ 'cabecera' => $cabecera ];
+        return ['cabecera' => $cabecera];
     }
 
-    public function getDetalles(Request $request){
+    public function getDetalles(Request $request)
+    {
         $id = $request->id;
         $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
-            ->select(   'detalle_ventas.id', 'detalle_ventas.cantidad','detalle_ventas.precio', 
-            'detalle_ventas.descuento', 'articulos.id', 'articulos.nombre', 'articulos.codigo' )
-            ->where('detalle_ventas.id_venta','=',$id)
+            ->join('categorias', 'articulos.id_categoria', '=', 'categorias.id')
+            ->select(
+                'detalle_ventas.id',
+                'detalle_ventas.cantidad',
+                'detalle_ventas.precio',
+                'detalle_ventas.descuento',
+                'articulos.id',
+                DB::RAW('CONCAT(categorias.nombre," ",articulos.nombre) AS nombre'),
+                'articulos.codigo'
+            )
+            ->where('detalle_ventas.id_venta', '=', $id)
             ->orderBy('detalle_ventas.id', 'desc')->get();
-        return [ 'detalles' => $detalles ];
+        return ['detalles' => $detalles];
     }
 
-    public function getVentaListPDF(Request $request) {
+    public function getVentaListPDF(Request $request)
+    {
         $criterio = $request->criterio;
         $buscar = $request->buscar;
 
         $ventas = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
-        ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-        ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                    'ventas.serie_comprobante','ventas.impuesto',
-                    DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
-                    'ventas.total','ventas.descuento','ventas.estado',
-                    'personas.id as cliente_id', 'personas.nombre', 'users.usuario',
-                    'ventas.created_at' )
-        ->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])
-        ->orderBy('ventas.fecha_hora', 'desc')->get();
+            ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
+            ->select(
+                'ventas.id',
+                'ventas.tipo_comprobante',
+                'ventas.numero_comprobante',
+                'ventas.serie_comprobante',
+                'ventas.impuesto',
+                DB::raw('DATE_FORMAT(ventas.fecha_hora, "%d-%m-%Y %H:%i:%s") as fecha_hora'),
+                'ventas.total',
+                'ventas.descuento',
+                'ventas.estado',
+                'personas.id as cliente_id',
+                'personas.nombre',
+                'users.usuario',
+                'ventas.created_at'
+            )
+            ->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])
+            ->orderBy('ventas.fecha_hora', 'desc')->get();
 
         $cantidad = count($ventas);
         $total = DB::table('ventas')->whereBetween(DB::raw('DATE_FORMAT(ventas.fecha_hora, "%Y-%m-%d")'), [$buscar, date('Y-m-d')])->sum('ventas.total');
-        $pdf = \PDF::loadView( 'pdf.ventas_pdf', ['ventas'=>$ventas, 'cantidad'=>$cantidad, 'total'=>$total] );
-        return $pdf->download( 'ventas.pdf' ); 
+        $pdf = \PDF::loadView('pdf.ventas_pdf', ['ventas' => $ventas, 'cantidad' => $cantidad, 'total' => $total]);
+        return $pdf->download('ventas.pdf');
     }
 
-    public function create() {
-        
+    public function create()
+    {
     }
 
-    public function store(Request $request) {
-        if($request->nit != '' && $request->nit != 'CF')
-            $this->validaciones($request,0);
+    public function store(Request $request)
+    {
+        if ($request->nit != '' && $request->nit != 'CF')
+            $this->validaciones($request, 0);
         else
-            $this->validaciones($request,0,true);
+            $this->validaciones($request, 0, true);
 
-        try{
+        try {
             DB::beginTransaction();
 
             /*$turno_activo = Turno::where('id_recibe',Auth::user()->id_persona)->where('activo',true)->first();
@@ -138,26 +194,27 @@ class VentaController extends Controller {
             $evitar_negativo = true;
 
             $talonario_activo = Talonario::where('activo', 1)->first();
-            
-            if(is_null($talonario_activo))
-                return response()->json(['No se encuentra ningun talonario activo' => ''],409);
-            else{
-                if(($request->tipo_comprobante=='FACTURA')
-                &&($talonario_activo->descontar == 0)) {
+
+            if (is_null($talonario_activo))
+                return response()->json(['No se encuentra ningun talonario activo' => ''], 409);
+            else {
+                if (($request->tipo_comprobante == 'FACTURA')
+                    && ($talonario_activo->descontar == 0)
+                ) {
                     $talonario_activo->descontar = $talonario_activo->inicio;
                     $talonario_activo->save();
-                } else if(($request->tipo_comprobante=='FACTURA')
-                &&($talonario_activo->descontar < $talonario_activo->fin+1)) {
-                    $talonario_activo->descontar = $talonario_activo->descontar+1;
+                } else if (($request->tipo_comprobante == 'FACTURA')
+                    && ($talonario_activo->descontar < $talonario_activo->fin + 1)
+                ) {
+                    $talonario_activo->descontar = $talonario_activo->descontar + 1;
                     $talonario_activo->save();
-                } else if($request->tipo_comprobante=='FACTURA'){
-                    return response()->json(['Existe error en la configuración del talonario' => ''],409);
+                } else if ($request->tipo_comprobante == 'FACTURA') {
+                    return response()->json(['Existe error en la configuración del talonario' => ''], 409);
                 }
             }
-            
 
-            if($request->id_cliente == 0 || $request->id_cliente == '')
-            {
+
+            if ($request->id_cliente == 0 || $request->id_cliente == '') {
                 $persona = new Persona();
                 $persona->nombre = $request->cliente;
                 $persona->tipo_documento = Persona::TIPO_DOCUMENTO;
@@ -175,48 +232,45 @@ class VentaController extends Controller {
             $venta->id_talonario = $talonario_activo->id;
             $descuento = 0;
 
-            if($request->tipo_comprobante=='FACTURA'){
+            if ($request->tipo_comprobante == 'FACTURA') {
                 $venta->serie_comprobante = $talonario_activo->serie;
                 $venta->numero_comprobante = $talonario_activo->descontar;
                 $venta->tipo_comprobante = 'FACTURA';
-            } 
-            else {
+            } else {
                 $comprobante = 0;
                 $recibo = Venta::where('tipo_comprobante', 'RECIBO')->get()->last();
-                if(!is_null($recibo)) $comprobante = $recibo->numero_comprobante;
+                if (!is_null($recibo)) $comprobante = $recibo->numero_comprobante;
                 $venta->serie_comprobante = 'Recibo';
-                $venta->numero_comprobante = $comprobante+1;
+                $venta->numero_comprobante = $comprobante + 1;
                 $venta->tipo_comprobante = 'RECIBO';
                 $descuento = $request->descuento;
             }
-            
+
             $venta->fecha_hora = $time->toDateTimeString();
             $venta->impuesto = Venta::IMPUESTO;
-            if(isset($request->descuento)) $venta->descuento = $request->descuento;
-            else $venta->descuento=0;
-            $venta->total = $request->total - $descuento;  
-            $venta->credito = $request->credito;          
+            if (isset($request->descuento)) $venta->descuento = $request->descuento;
+            else $venta->descuento = 0;
+            $venta->total = $request->total - $descuento;
+            $venta->credito = $request->credito;
             $venta->estado = Venta::ESTADO_REGISTRADO;
             $venta->save();
 
             $detalles = $request->data;      // lista de detalles
-            for($i=0; $i<count($detalles); $i++) {
-                $articulo = Articulo::findOrFail( $detalles[$i]['id_articulo'] );
+            for ($i = 0; $i < count($detalles); $i++) {
+                $articulo = Articulo::findOrFail($detalles[$i]['id_articulo']);
                 $articulo->stock = $articulo->stock - $detalles[$i]['cantidad'];
-                if($articulo->stock < 0)
-                {                      
-                    $evitar_negativo = false; 
+                if ($articulo->stock < 0) {
+                    $evitar_negativo = false;
                     break;
                 }
             }
 
-            if($evitar_negativo == true){
-                for($i=0; $i<count($detalles); $i++) {
-                    $articulo = Articulo::findOrFail( $detalles[$i]['id_articulo'] );
+            if ($evitar_negativo == true) {
+                for ($i = 0; $i < count($detalles); $i++) {
+                    $articulo = Articulo::findOrFail($detalles[$i]['id_articulo']);
                     $articulo->stock = $articulo->stock - $detalles[$i]['cantidad'];
 
-                    if($articulo->stock == 0)
-                    {
+                    if ($articulo->stock == 0) {
                         $articulo->estado = 0;
                     }
                     $articulo->save();
@@ -226,12 +280,12 @@ class VentaController extends Controller {
                     $detalle->id_articulo = $detalles[$i]['id_articulo'];
                     $detalle->cantidad = $detalles[$i]['cantidad'];
                     $detalle->precio = $articulo->precio_venta;
-                    if(isset($detalles[$i]['descuento_articulo'])) $detalle->descuento = $detalles[$i]['descuento_articulo'];
+                    if (isset($detalles[$i]['descuento_articulo'])) $detalle->descuento = $detalles[$i]['descuento_articulo'];
                     else $detalle->descuento = 0;
                     $detalle->save();
                 }
-            } else  {
-                return response()->json(['Ocurrio un problema al querer realizar la venta' => ''],409);
+            } else {
+                return response()->json(['Ocurrio un problema al querer realizar la venta' => ''], 409);
             }
 
             /*$turno_activo->caja_fin = $turno_activo->caja_fin + $venta->total;
@@ -255,130 +309,171 @@ class VentaController extends Controller {
             }*/
 
             DB::commit();
-            return response()->json(['data'=>$venta],200); 
-        }
-        catch(\Exception $e){
+            return response()->json(['data' => $venta], 200);
+        } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['Sistema'=> $e->getMessage()],409);
+            return response()->json(['Sistema' => $e->getMessage()], 409);
         }
     }
 
-    public function darBajaEstado(Request $request) {
-        try{
+    public function darBajaEstado(Request $request)
+    {
+        try {
             DB::beginTransaction();
-                $venta = Venta::findOrFail( $request->id );
+            $venta = Venta::findOrFail($request->id);
 
-                $detalles = DetalleVenta::where('id_venta', $venta->id)->get();      // lista de detalles
-                foreach ($detalles as $key => $value) {
-                    $articulo = Articulo::findOrFail( $value->id_articulo );
-                    $articulo->stock = $articulo->stock + $value->cantidad;
-                    $articulo->estado = 1;
-                    $articulo->save();
-                }
+            $detalles = DetalleVenta::where('id_venta', $venta->id)->get();      // lista de detalles
+            foreach ($detalles as $key => $value) {
+                $articulo = Articulo::findOrFail($value->id_articulo);
+                $articulo->stock = $articulo->stock + $value->cantidad;
+                $articulo->estado = 1;
+                $articulo->save();
+            }
 
-                $venta->estado = Venta::ESTADO_ANULADO;
-                $venta->save();
+            $venta->estado = Venta::ESTADO_ANULADO;
+            $venta->save();
 
             DB::commit();
-            return response()->json(['data'=>$venta],200); 
-        }
-        catch(\Exception $e){
+            return response()->json(['data' => $venta], 200);
+        } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['Sistema'=> 'Ocurrio un error'],409);
-        }        
+            return response()->json(['Sistema' => 'Ocurrio un error'], 409);
+        }
     }
 
-    public function show($id) {
-        
+    public function show($id)
+    {
     }
-    public function edit($id) {
-        
+    public function edit($id)
+    {
     }
-    public function update(Request $request, $id) {
-        
+    public function update(Request $request, $id)
+    {
     }
-    public function destroy($id) {
+    public function destroy($id)
+    {
         //
     }
 
-    public function getVentaReciboPDF( Request $request, $id ) {
+    public function getVentaReciboPDF(Request $request, $id)
+    {
         $venta = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-            ->join('personas AS vendedor', 'users.id_persona','=','vendedor.id')
-            ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                        'ventas.serie_comprobante', 'ventas.created_at',
-                        'ventas.fecha_hora','ventas.impuesto',
-                        'ventas.total','ventas.descuento','ventas.estado',
-                        'personas.nombre', 'personas.tipo_documento', 'personas.numero_documento',
-                        'personas.direccion', 'personas.telefono', 'personas.email',
-                        'users.usuario', 'vendedor.nombre AS vendedor')
+            ->join('personas AS vendedor', 'users.id_persona', '=', 'vendedor.id')
+            ->select(
+                'ventas.id',
+                'ventas.tipo_comprobante',
+                'ventas.numero_comprobante',
+                'ventas.serie_comprobante',
+                'ventas.created_at',
+                'ventas.fecha_hora',
+                'ventas.impuesto',
+                'ventas.total',
+                'ventas.descuento',
+                'ventas.estado',
+                'personas.nombre',
+                'personas.tipo_documento',
+                'personas.numero_documento',
+                'personas.direccion',
+                'personas.telefono',
+                'personas.email',
+                'users.usuario',
+                'vendedor.nombre AS vendedor'
+            )
             ->where('ventas.id', '=', $id)
             ->orderBy('ventas.id', 'desc')->take(1)->get();
-        
+
         $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
-            ->select(   'detalle_ventas.cantidad','detalle_ventas.precio', 
-            'detalle_ventas.descuento', 'articulos.nombre', 'articulos.codigo', 'articulos.descripcion' )
-            ->where('detalle_ventas.id_venta','=',$id)
+            ->join('categorias', 'articulos.id_categoria', '=', 'categorias.id')
+            ->select(
+                'detalle_ventas.cantidad',
+                'detalle_ventas.precio',
+                'detalle_ventas.descuento',
+                DB::RAW('CONCAT(categorias.nombre," ",articulos.nombre) AS nombre'),
+                'articulos.codigo',
+                'articulos.descripcion'
+            )
+            ->where('detalle_ventas.id_venta', '=', $id)
             ->orderBy('detalle_ventas.id', 'desc')->get();
-        
-        $numero_venta = Venta::select('numero_comprobante')->where('id',$id)->get();
+
+        $numero_venta = Venta::select('numero_comprobante')->where('id', $id)->get();
 
         //return view( 'pdf.venta_pdf', compact( ['venta','detalles'] ) );
 
-        $pdf= \PDF::loadView( 'pdf.venta_recibo_pdf', [
-            'venta'=>$venta, 
-            'detalles'=>$detalles, 
-            'numero_venta'=>$numero_venta
-        ] );
+        $pdf = \PDF::loadView('pdf.venta_recibo_pdf', [
+            'venta' => $venta,
+            'detalles' => $detalles,
+            'numero_venta' => $numero_venta
+        ]);
 
-        return $pdf->stream( 'venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
+        return $pdf->stream('venta-' . $numero_venta[0]->numero_comprobante . '.pdf');
     }
 
-    public function getVentaFacturaPDF( Request $request, $id ) {
+    public function getVentaFacturaPDF(Request $request, $id)
+    {
         $venta = Venta::join('personas', 'ventas.id_cliente', '=', 'personas.id')
             ->join('users', 'ventas.id_usuario', '=', 'users.id_persona')
-            ->select(   'ventas.id','ventas.tipo_comprobante','ventas.numero_comprobante',
-                        'ventas.serie_comprobante', 'ventas.created_at',
-                        'ventas.fecha_hora','ventas.impuesto',
-                        'ventas.total','ventas.descuento','ventas.estado',
-                        'personas.nombre', 'personas.tipo_documento', 'personas.numero_documento',
-                        'personas.direccion', 'personas.telefono', 'personas.email',
-                        'users.usuario' )
+            ->select(
+                'ventas.id',
+                'ventas.tipo_comprobante',
+                'ventas.numero_comprobante',
+                'ventas.serie_comprobante',
+                'ventas.created_at',
+                'ventas.fecha_hora',
+                'ventas.impuesto',
+                'ventas.total',
+                'ventas.descuento',
+                'ventas.estado',
+                'personas.nombre',
+                'personas.tipo_documento',
+                'personas.numero_documento',
+                'personas.direccion',
+                'personas.telefono',
+                'personas.email',
+                'users.usuario'
+            )
             ->where('ventas.id', '=', $id)
             ->orderBy('ventas.id', 'desc')->take(1)->get();
-        
-        $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
-            ->select(   'detalle_ventas.cantidad','detalle_ventas.precio', 
-            'detalle_ventas.descuento', 'articulos.nombre', 'articulos.codigo', 'articulos.descripcion' )
-            ->where('detalle_ventas.id_venta','=',$id)
-            ->orderBy('detalle_ventas.id', 'desc')->get();
-        
-        $numero_venta = Venta::select('numero_comprobante')->where('id',$id)->get();
 
-        //return view( 'pdf.venta_pdf', compact( ['venta','detalles'] ) );
-        $dia = date("d",strtotime($venta[0]->fecha_hora));
-        $mes = date("m",strtotime($venta[0]->fecha_hora));
-        $anio = date("Y",strtotime($venta[0]->fecha_hora));
+        $detalles = DetalleVenta::join('articulos', 'detalle_ventas.id_articulo', '=', 'articulos.id')
+            ->join('categorias', 'articulos.id_categoria', '=', 'categorias.id')
+            ->select(
+                'detalle_ventas.cantidad',
+                'detalle_ventas.precio',
+                'detalle_ventas.descuento',
+                DB::RAW('CONCAT(categorias.nombre," ",articulos.nombre) AS nombre'),
+                'articulos.codigo',
+                'articulos.descripcion'
+            )
+            ->where('detalle_ventas.id_venta', '=', $id)
+            ->orderBy('detalle_ventas.id', 'desc')->get();
+
+        $numero_venta = Venta::select('numero_comprobante')->where('id', $id)->get();
+
+        $dia = date("d", strtotime($venta[0]->fecha_hora));
+        $mes = date("m", strtotime($venta[0]->fecha_hora));
+        $anio = date("Y", strtotime($venta[0]->fecha_hora));
         $filas = count($detalles);
         $printFilas = '';
-        for($i=1;$i<=17-$filas;$i++){
-            $printFilas=$printFilas.'<tr><td>&nbsp;</td></tr>';
+        for ($i = 1; $i <= 17 - $filas; $i++) {
+            $printFilas = $printFilas . '<tr><td>&nbsp;</td></tr>';
         }
 
-        $pdf= \PDF::loadView( 'pdf.venta_factura_pdf', [
-            'venta'=>$venta, 
-            'detalles'=>$detalles, 
-            'numero_venta'=>$numero_venta,
-            'dia'=>$dia,
-            'mes'=>$mes,
-            'anio'=>$anio,
-            'filas'=>$printFilas,
-        ] );
+        $pdf = \PDF::loadView('pdf.venta_factura_pdf', [
+            'venta' => $venta,
+            'detalles' => $detalles,
+            'numero_venta' => $numero_venta,
+            'dia' => $dia,
+            'mes' => $mes,
+            'anio' => $anio,
+            'filas' => $printFilas,
+        ]);
 
-        return $pdf->stream( 'venta-' . $numero_venta[0]->numero_comprobante . '.pdf' );
+        return $pdf->stream('venta-' . $numero_venta[0]->numero_comprobante . '.pdf');
     }
 
-    public function validaciones(Request $request, $id, $cf=false){
+    public function validaciones(Request $request, $id, $cf = false)
+    {
         $messages = [
             'id_cliente.required' => 'El cliente es obligatoria',
             'id_cliente.integer' => 'El cliente tiene que ser un ID',
@@ -394,13 +489,11 @@ class VentaController extends Controller {
             'cliente.required' => 'El nombre del cliente es obligatorio',
             'cliente.unique' => 'El nombre del cliente ya existe',
             'nit.required' => 'El NIT del cliente es obligatorio',
-            'nit.unique' => 'El NIT del cliente ya existe',           
+            'nit.unique' => 'El NIT del cliente ya existe',
         ];
 
-        if($request->id_cliente == 0 || $request->id_cliente == '')
-        {
-            if($cf == false)
-            {
+        if ($request->id_cliente == 0 || $request->id_cliente == '') {
+            if ($cf == false) {
                 $rules = [
                     'cliente' => 'required|max:110|unique:personas,nombre',
                     'nit' => 'required|unique:personas,numero_documento',
@@ -408,23 +501,19 @@ class VentaController extends Controller {
 
                     'total' => 'required|numeric',
                     'data.id_articulo.*' => 'required|integer|exists:articulos,id',
-                    'data.cantidad.*' => 'required|numeric',                   
+                    'data.cantidad.*' => 'required|numeric',
                 ];
-            }
-            else
-            {
+            } else {
                 $rules = [
                     'cliente' => 'required|max:110|unique:personas,nombre',
                     'direccion' => 'max:250|nullable',
 
                     'total' => 'required|numeric',
                     'data.id_articulo.*' => 'required|integer|exists:articulos,id',
-                    'data.cantidad.*' => 'required|numeric',                   
-                ]; 
+                    'data.cantidad.*' => 'required|numeric',
+                ];
             }
-        }
-        else
-        {
+        } else {
             $rules = [
                 'id_cliente' => 'required|integer|exists:personas,id',
                 'total' => 'required|numeric',
@@ -433,8 +522,8 @@ class VentaController extends Controller {
             ];
         }
 
-        $validator = $request->validate($rules,$messages);
+        $validator = $request->validate($rules, $messages);
 
         return $validator;
-    }       
+    }
 }

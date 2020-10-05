@@ -14,6 +14,7 @@ class CreateDepositosTable extends Migration
             $table->longText('foto');
             $table->date('fecha');
             $table->decimal('monto',10,2);
+            $table->boolean('compra_venta');
             $table->integer('id_empleado')->unsigned();
             $table->foreign('id_empleado')->references('id')->on('personas')->onUpdate('cascade');
             $table->timestamps();

@@ -123,7 +123,7 @@
                                 </div>
                             </div>
                             
-                            <div class="row">
+                            <div class="row" v-if="saldo != 0">
                                 <div class="col-md-8"></div>
                                 <div class="input-group col-md-4">
                                     <input type="number" v-model="abono" class="form-control" placeholder="Abonar Q." aria-label="Abono" aria-describedby="basic-addon2">
@@ -177,7 +177,7 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="row">
+                            <div class="row" v-if="saldo != 0">
                                 <div class="col-md-8"></div>
                                 <div class="input-group col-md-4">
                                     <input type="number" v-model="abono" class="form-control" placeholder="Abonar Q." aria-label="Abono" aria-describedby="basic-addon2">
