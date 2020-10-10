@@ -1,11 +1,13 @@
 <?php
 
+use App\User;
+use App\Persona;
 use App\Articulo;
 use App\Categoria;
-use App\Persona;
 use App\Proveedor;
-use App\User;
+use App\Imports\ProductoImport;
 use Illuminate\Database\Seeder;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DatabaseSeeder extends Seeder
 {
@@ -27,5 +29,7 @@ class DatabaseSeeder extends Seeder
         $user->save();
 
         echo 'Usuario --> '.$user->usuario.' || Password --> '.$user->usuario.PHP_EOL;
+
+        Excel::import(new ProductoImport, 'database/seeds/Catalogo/producto.xlsx');
     }
 }
